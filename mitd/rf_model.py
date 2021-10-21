@@ -5,6 +5,9 @@ Created on Wed Oct 20 18:00:23 2021
 @author: GJK
 """
 
+from sklearn import svm
+from sklearn import metrics
+
 class RandomForest_Model:
     def __init__(self):
         self.__model        = None
@@ -25,6 +28,7 @@ class RandomForest_Model:
     
     """
         Calculates the accuracy of the model.
+        
         @return accuracy the accuracy (type float) of the model based on the 
             predictions made against the ground truths.
     """

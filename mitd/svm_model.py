@@ -56,6 +56,7 @@ class SVM_Model:
     
     """
         Calculates the accuracy of the model.
+        
         @return accuracy the accuracy (type float) of the model based on the 
             predictions made against the ground truths.
     """

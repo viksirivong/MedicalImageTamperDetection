@@ -15,8 +15,9 @@ Description:
     
     @note
         In our dataset, we have a collection of 2D images per instance.
-        Each image will have the same dimensions, x pixels by y pixels.
-        Say we have n of these images.
+        We will convert only the first image of this collection.
+        Each image of the different instances will have the same dimensions, 
+        x pixels by y pixels.
         The dimension of each image in imageMatrix should be (x * y, 1).
 """
 def convertDcmToMatrix(filePath):
