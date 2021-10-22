@@ -1,6 +1,7 @@
 import os
 import numpy as np
-from keras import backend as K
+import tensorflow as tf
+
 
 #consider your coordinate system, and x vs y
 
@@ -22,7 +23,7 @@ config['modelpath_remove'] = os.path.join("data","models","REM") #path to save/l
 config['progress'] = "images" #path to save snapshots of training progress
 
 # tensorflow configuration
-devices = K.tensorflow_backend._get_available_gpus()
+devices = tf.config.list_physical_devices('GPU') 
 if len(devices) > 0: #if there are GPUs avalaible...
     config['gpus'] = "0" #sets which GPU to use (use_CPU:"", use_GPU0:"0", etc...)
 else:
