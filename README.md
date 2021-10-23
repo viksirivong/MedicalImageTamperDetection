@@ -14,11 +14,11 @@ Today, a CT (Computed Tomography) scanner is an essential tool in health-care sy
 * [ ]  Related work
 * [ ]  Tidy up final report
 
-## Link to the GitHub repository
+## GitHub repository
 
 [GitHub repository](https://github.com/viksirivong/MedicalImageTamperDetection)
 
-## Link to the screencast video
+## Screencast Video
 
 [Screencast Video]( "Youtube")
 Video created with [OBS Studio](https://obsproject.com/).
