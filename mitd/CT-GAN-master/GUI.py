@@ -157,7 +157,7 @@ class GUI(object):
             self.im.axes.figure.canvas.draw()
             uuid = os.path.split(self.filepaths[self.fileindex])[-1][:-4]
             #save scan
-            self.manipulator.save_tampered_scan(os.path.join(self.savepath,uuid),output_type='dicom')
+            self.manipulator.save_tampered_scan(os.path.join(self.savepath,uuid),output_type='numpy')
             #save coords
             file_exists = False
             if os.path.exists(os.path.join(self.savepath,"tamper_coordinates.csv")):

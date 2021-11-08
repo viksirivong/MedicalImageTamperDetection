@@ -41,6 +41,7 @@ class scan_manipulator:
     def __init__(self):
         print("===Init Tamperer===")
         self.scan = None
+        self.original = None
         self.load_path = None
         self.m_zlims = config['mask_zlims']
         self.m_ylims = config['mask_ylims']
@@ -74,12 +75,14 @@ class scan_manipulator:
             print("Failed to Load Remover Model")
 
     # loads dicom/mhd to be tampered
-    # Provide path to a *.dcm file or the *mhd file. The contaitning folder should have the other slices)
+    # Provide path to a *.dcm file or the *mhd file. The containing folder should have the other slices)
     def load_target_scan(self, load_path):
         self.load_path = load_path
         print('Loading scan')
         self.scan, self.scan_spacing, self.scan_orientation, self.scan_origin, self.scan_raw_slices = load_scan(load_path)
         self.scan = self.scan.astype(float)
+
+        self.original = self.scan.copy()
 
     # saves tampered scan as 'dicom' series or 'numpy' serialization
     def save_tampered_scan(self, save_dir, output_type='dicom'):
@@ -95,7 +98,8 @@ class scan_manipulator:
                 save_dicom(self.scan, origional_raw_slices=self.scan_raw_slices, dst_directory=save_dir)
         else: #save as numpy
             os.makedirs(save_dir, exist_ok=True)
-            np.save(os.path.join(save_dir,'tampered_scan.np'),self.scan)
+            np.save(os.path.join(save_dir,'tampered_scan'),self.scan)
+            np.save(os.path.join(save_dir,'original_scan'),self.original)
         print('Done.')
 
 
