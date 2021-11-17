@@ -5,6 +5,8 @@ import os
 import pandas as pd
 from scipy import ndimage
 
+from utils.dicom_utils import load_dicom
+
 DEFAULT_LOAD_PATH   = "C:\\Users\\voidp\\Desktop\\CT-GAN\\data\\train"
 MAX_FILES_PROCESSED = 200       # limit on how many files to process.
 DESIRED_DEPTH       = 64        # dimension for rescaling.
@@ -53,6 +55,7 @@ def main():
     save_path = sys.argv[2] if len(sys.argv) == 3 else load_path 
     
     X     = []
+    Y     = []
     count = 0
     files = os.listdir(load_path)
 
@@ -64,26 +67,34 @@ def main():
         if not ('0' <= file.split('.')[-1][-1] <= '9'):
             print("Skipped file: {}".format(file))
             continue
-        # load original/tampered scans.
-        original = np.load(load_path + "\\" + file + '\\original_scan.npy')
-        tampered = np.load(load_path + "\\" + file + '\\tampered_scan.npy')
-        # normalize original/tampered scans.
-        original = normalize(original)
-        tampered = normalize(tampered)
-        # resize original/tampered scans for efficiency.
-        original = resize_volume(original)
-        tampered = resize_volume(tampered)
-        # add both scans of type ndarray to list.
-        X.append(original)
-        X.append(tampered)
-        # report which file has been processed.
-        print("Finished processing file: {}".format(file))
-        # track how many files were processed.
-        count += 1
+        # if more than 2 files, it is .dcm 
+        if len(os.listdir(file)) > 2:
+            scan, spacing, orientation, origin, raw_slices = load_dicom(load_path + '\\' + file)
+            X.append(scan)
+            Y.append(1)
+        else:
+            # load original/tampered scans.
+            original = np.load(load_path + "\\" + file + '\\original_scan.npy')
+            tampered = np.load(load_path + "\\" + file + '\\tampered_scan.npy')
+            # normalize original/tampered scans.
+            original = normalize(original)
+            tampered = normalize(tampered)
+            # resize original/tampered scans for efficiency.
+            original = resize_volume(original)
+            tampered = resize_volume(tampered)
+            # add both scans of type ndarray to list.
+            X.append(original)
+            X.append(tampered)
+            Y.append(0)
+            Y.append(1)
+            # report which file has been processed.
+            print("Finished processing file: {}".format(file))
+            # track how many files were processed.
+            count += 1
 
     # save data as .npz in save_path
-    # when loading this .npz file, use array['data_X'] for access
-    np.savez_compressed(save_path + "\\data.npz", data_X=np.array(X))
+    # when loading this .npz file, use array['data_X'], array['data_Y'] for access
+    np.savez_compressed(save_path + "\\data.npz", data_X=np.array(X), data_Y=np.array(Y))
 
 if __name__ == "__main__":
     main()

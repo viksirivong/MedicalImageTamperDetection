@@ -2,7 +2,6 @@ import os
 import numpy as np
 import tensorflow as tf
 
-
 #consider your coordinate system, and x vs y
 
 config = {}
@@ -23,8 +22,22 @@ config['modelpath_remove'] = os.path.join("data","models","REM") #path to save/l
 config['progress'] = "images" #path to save snapshots of training progress
 
 # tensorflow configuration
-devices = tf.config.list_physical_devices('GPU') 
-if len(devices) > 0: #if there are GPUs avalaible...
+gpus = tf.config.list_physical_devices('GPU') 
+
+if gpus:
+  # Restrict TensorFlow to only allocate 1GB of memory on the first GPU
+  try:
+    tf.config.set_logical_device_configuration(
+        gpus[0],
+        [tf.config.LogicalDeviceConfiguration(memory_limit=1024)])
+    logical_gpus = tf.config.list_logical_devices('GPU')
+    print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+  except RuntimeError as e:
+    # Virtual devices must be set before GPUs have been initialized
+    print(e)
+
+
+if len(gpus) > 0: #if there are GPUs avalaible...
     config['gpus'] = "0" #sets which GPU to use (use_CPU:"", use_GPU0:"0", etc...)
 else:
     config['gpus'] = ""

@@ -28,9 +28,7 @@ def main():
     # load training data.
     with np.load(load_path + '\\data.npz') as data:
         train_X = data['data_X']
-
-    # generate training labels = [0, 1, 0, 1, ..., 0, 1].
-    train_Y = np.array([0 if i % 2 == 0 else 1 for i in range(len(train_X))] )
+        train_Y = data['data_Y']
 
     # load dev/test set
     with np.load(DEVTEST_LOAD_PATH + '\\devtest.npz') as data:
@@ -38,11 +36,11 @@ def main():
         devtest_Y = data['devtest_Y']
     
     # partition test set.
-    test_X = devtest_X[:10] + devtest_X[-10:]
-    test_Y = devtest_Y[:10] + devtest_Y[-10:]
+    test_X = devtest_X[:20] + devtest_X[-20:]
+    test_Y = devtest_Y[:20] + devtest_Y[-20:]
     # partition validation set.
-    val_X = devtest_X[10:-10]
-    val_Y = devtest_Y[10:-10]
+    val_X = devtest_X[20:-20]
+    val_Y = devtest_Y[20:-20]
 
     # create tensor datasets.
     train_dataset = tf.data.Dataset.from_tensor_slices( (train_X, train_Y) )
