@@ -29,23 +29,23 @@ def main():
     with np.load(load_path + '\\data.npz') as data:
         train_X = data['data_X']
         train_Y = data['data_Y']
-
+ 
     # load dev/test set
     with np.load(DEVTEST_LOAD_PATH + '\\devtest.npz') as data:
         devtest_X = data['devtest_X']
         devtest_Y = data['devtest_Y']
     
     # partition test set.
-    test_X = devtest_X[:20] + devtest_X[-20:]
-    test_Y = devtest_Y[:20] + devtest_Y[-20:]
+    test_X = devtest_X[:40] 
+    test_Y = devtest_Y[:40] 
+
     # partition validation set.
-    val_X = devtest_X[20:-20]
-    val_Y = devtest_Y[20:-20]
+    val_X = devtest_X[40:]
+    val_Y = devtest_Y[40:]
 
     # create tensor datasets.
     train_dataset = tf.data.Dataset.from_tensor_slices( (train_X, train_Y) )
     val_dataset   = tf.data.Dataset.from_tensor_slices( (val_X, val_Y) )
-    test_dataset  = tf.data.Dataset.from_tensor_slices( (test_X, test_Y) ) 
 
     # preprocess training set.
     train_dataset = (
@@ -56,12 +56,6 @@ def main():
     # preprocess validation set.
     val_dataset = (
         val_dataset.shuffle(len(val_dataset))
-        .map(preprocess)
-        .batch(BATCH_SIZE)
-    )
-    # preprocess test set.
-    test_dataset = (
-        val_dataset.shuffle(len(test_dataset))
         .map(preprocess)
         .batch(BATCH_SIZE)
     )
@@ -90,7 +84,7 @@ def main():
 
                 tf.keras.layers.Dense(1, activation='sigmoid')
     ])
-
+    
     # define learning rate schedule.
     lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
         INITIAL_LEARNING_RATE, decay_steps=100000, decay_rate=0.96, staircase=True
@@ -100,16 +94,16 @@ def main():
     model.compile(
         loss="binary_crossentropy",
         optimizer=tf.keras.optimizers.Adam(learning_rate=lr_schedule),
-        metrics=['accuracy'],
+        metrics=['acc'],
     )
-
+    
     # define callbacks.
     checkpoint_cb = tf.keras.callbacks.ModelCheckpoint(
         "tamperDetection.h5", save_best_only=True
     )
 
     # define early stopping callback.
-    early_stopping_cb = tf.keras.callbacks.EarlyStopping(monitor="val_accuracy", patience=15)
+    early_stopping_cb = tf.keras.callbacks.EarlyStopping(monitor="val_acc", patience=15)
 
     # fit model to data.
     model.fit(
@@ -122,7 +116,7 @@ def main():
     )
 
     # evaluate model on test set.
-    model.evaluate(test_dataset)
+    model.evaluate(test_X, test_Y)
 
     # print model summary.
     print(model.summary())
@@ -130,9 +124,10 @@ def main():
     # plot model accuracy and loss for training/validation sets.
     fig, ax = plt.subplots(1, 2, figsize=(20, 3))
     ax = ax.ravel()
-    for i, metric in enumerate(["accuracy", "loss"]):
+ 
+    for i, metric in enumerate(['acc', 'loss']):
         ax[i].plot(model.history.history[metric])
-        ax[i].plot(model.history.history["val_" + metric])
+        ax[i].plot(model.history.history['val_' + metric])
         ax[i].set_title("Model {}".format(metric))
         ax[i].set_xlabel("epochs")
         ax[i].set_ylabel(metric)
@@ -140,7 +135,7 @@ def main():
 
     # save data as .npz in save_path
     # when loading this .npz file, use array['test_dataset'] for access
-    np.savez_compressed(save_path + "\\testset.npz", test_dataset=np.array(test_dataset))
+    np.savez_compressed(save_path + "\\testset.npz", test_X=np.array(test_X), test_Y=np.array(test_Y))
 
 if __name__ == "__main__":
     main()
