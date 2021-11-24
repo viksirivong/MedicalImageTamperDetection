@@ -11,7 +11,7 @@ DEFAULT_SAVE_PATH     = 'C:\\Users\\voidp\\Desktop\\CT-GAN\\data\\devtest'
 INPUT_SHAPE           = (64, 128, 128)      # 3D CT scans of dimension 64 slices x 128 length x 128 width
 INITIAL_LEARNING_RATE = 0.0001              # initial learning rate.
 NUM_EPOCHS            = 100                 # number of epochs.
-BATCH_SIZE            = 32                  # batch size.
+BATCH_SIZE            = 2                   # batch size.
 
 # preprocess step consists only of expanding across one dimension.
 # data augmentation was not performed as it isn't useful for our application.
