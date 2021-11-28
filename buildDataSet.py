@@ -7,8 +7,8 @@ from scipy import ndimage
 
 from utils.dicom_utils import load_dicom
 
-DEFAULT_LOAD_PATH   = "C:\\Users\\voidp\\Desktop\\CT-GAN\\data\\train"
-MAX_FILES_PROCESSED = 200       # limit on how many files to process.
+DEFAULT_LOAD_PATH   = None
+MAX_FILES_PROCESSED = 100       # limit on how many files to process.
 DESIRED_DEPTH       = 64        # dimension for rescaling.
 DESIRED_WIDTH       = 128       # dimension for rescaling.
 DESIRED_HEIGHT      = 128       # dimension for rescaling.

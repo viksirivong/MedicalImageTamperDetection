@@ -1,18 +1,19 @@
-import random
-import sys
-
 import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+import random
+import sys
 
-TRAIN_LOAD_PATH       = '/home/tminhat13/MedicalImageTamperDetection/mitd/CT-GAN-master/data/train'
-DEVTEST_LOAD_PATH     = '/home/tminhat13/MedicalImageTamperDetection/mitd/CT-GAN-master/data/devtest'
-DEFAULT_SAVE_PATH     = '/home/tminhat13/MedicalImageTamperDetection/mitd/CT-GAN-master/data/devtest'
+MODEL_NAME            = 'tamperDetection.h5'
+
+TRAIN_LOAD_PATH       = None
+DEVTEST_LOAD_PATH     = None
+DEFAULT_SAVE_PATH     = None
 
 INPUT_SHAPE           = (64, 128, 128)      # 3D CT scans of dimension 64 slices x 128 length x 128 width
 INITIAL_LEARNING_RATE = 0.0001              # initial learning rate.
-NUM_EPOCHS            = 400                 # number of epochs.
-BATCH_SIZE            = 32                   # batch size.
+NUM_EPOCHS            = 20                  # number of epochs.
+BATCH_SIZE            = 2                   # batch size.
 
 # preprocess step consists only of expanding across one dimension.
 # data augmentation was not performed as it isn't useful for our application.
@@ -27,12 +28,12 @@ def main():
     save_path = sys.argv[2] if len(sys.argv) >= 3 else DEFAULT_SAVE_PATH
 
     # load training data.
-    with np.load(load_path + '/data.npz') as data:
+    with np.load(load_path + '\\data.npz') as data:
         train_X = data['data_X']
         train_Y = data['data_Y']
  
     # load dev/test set
-    with np.load(DEVTEST_LOAD_PATH + '/devtest.npz') as data:
+    with np.load(DEVTEST_LOAD_PATH + '\\devtest.npz') as data:
         devtest_X = data['devtest_X']
         devtest_Y = data['devtest_Y']
     
@@ -61,31 +62,36 @@ def main():
         .batch(BATCH_SIZE)
     )
 
-    # Convolutional Neural Network Model
-    model = tf.keras.Sequential([
-                tf.keras.layers.Conv3D(filters=64, kernel_size=3, activation="relu"),
-                tf.keras.layers.MaxPool3D(pool_size=2),
-                tf.keras.layers.BatchNormalization(),
-                
-                tf.keras.layers.Conv3D(filters=64, kernel_size=3, activation="relu"),
-                tf.keras.layers.MaxPool3D(pool_size=2),
-                tf.keras.layers.BatchNormalization(),
+    # load model if one already exists.
+    model = None
+    if MODEL_NAME:
+        model = tf.keras.models.load_model(MODEL_NAME)
+    else:
+        # Convolutional Neural Network Model
+        model = tf.keras.Sequential([
+                    tf.keras.layers.Conv3D(filters=64, kernel_size=3, activation="relu"),
+                    tf.keras.layers.MaxPool3D(pool_size=2),
+                    tf.keras.layers.BatchNormalization(),
+                    
+                    tf.keras.layers.Conv3D(filters=64, kernel_size=3, activation="relu"),
+                    tf.keras.layers.MaxPool3D(pool_size=2),
+                    tf.keras.layers.BatchNormalization(),
 
-                tf.keras.layers.Conv3D(filters=128, kernel_size=3, activation="relu"),
-                tf.keras.layers.MaxPool3D(pool_size=2),
-                tf.keras.layers.BatchNormalization(),
+                    tf.keras.layers.Conv3D(filters=128, kernel_size=3, activation="relu"),
+                    tf.keras.layers.MaxPool3D(pool_size=2),
+                    tf.keras.layers.BatchNormalization(),
 
-                tf.keras.layers.Conv3D(filters=256, kernel_size=3, activation="relu"),
-                tf.keras.layers.MaxPool3D(pool_size=2),
-                tf.keras.layers.BatchNormalization(),
+                    tf.keras.layers.Conv3D(filters=256, kernel_size=3, activation="relu"),
+                    tf.keras.layers.MaxPool3D(pool_size=2),
+                    tf.keras.layers.BatchNormalization(),
 
-                tf.keras.layers.GlobalAveragePooling3D(),
-                tf.keras.layers.Dense(512, activation='relu'),
-                tf.keras.layers.Dropout(0.3),
+                    tf.keras.layers.GlobalAveragePooling3D(),
+                    tf.keras.layers.Dense(512, activation='relu'),
+                    tf.keras.layers.Dropout(0.3),
 
-                tf.keras.layers.Dense(1, activation='sigmoid')
-    ])
-    
+                    tf.keras.layers.Dense(1, activation='sigmoid')
+        ])
+        
     # define learning rate schedule.
     lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
         INITIAL_LEARNING_RATE, decay_steps=100000, decay_rate=0.96, staircase=True
@@ -136,7 +142,7 @@ def main():
 
     # save data as .npz in save_path
     # when loading this .npz file, use array['test_dataset'] for access
-    np.savez_compressed(save_path + "/testset.npz", test_X=np.array(test_X), test_Y=np.array(test_Y))
+    np.savez_compressed(save_path + "\\testset.npz", test_X=np.array(test_X), test_Y=np.array(test_Y))
 
 if __name__ == "__main__":
     main()

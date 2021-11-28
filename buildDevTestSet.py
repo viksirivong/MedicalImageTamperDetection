@@ -6,20 +6,13 @@ import numpy as np
 import buildDataSet
 
 from utils.dicom_utils import load_dicom
-sys.path.insert(1, 'C:\\Users\\voidp\\Desktop\\CT-GAN\\utils')
 import dicom_utils
 
-LOAD_PATHS = [
-    'C:\\Users\\voidp\\Desktop\\CT-GAN\\data\\EXP1_blind',
-    'C:\\Users\\voidp\\Desktop\\CT-GAN\\data\\EXP2_open'
-]
+LOAD_PATHS = []
 
-LABEL_PATHS = [
-    'C:\\Users\\voidp\\Desktop\\CT-GAN\\data\\labels_exp1.csv',
-    'C:\\Users\\voidp\\Desktop\\CT-GAN\\data\\labels_exp2.csv'
-]
+LABEL_PATHS = []
 
-SAVE_PATH = 'C:\\Users\\voidp\\Desktop\\CT-GAN\\data\\devtest'
+SAVE_PATH = None
 
 def generateLabels(path, labels):
     with open(path, 'r') as labelFile:

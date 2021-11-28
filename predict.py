@@ -1,12 +1,12 @@
 import tensorflow as tf
 import numpy as np
 
-DATA_LOAD_PATH  = "/home/tminhat13/MedicalImageTamperDetection/mitd/CT-GAN-master/data/devtest"
+DATA_LOAD_PATH  = None
 MODEL_NAME      = 'tamperDetection.h5'
 
 def main():
     # load data.
-    with np.load(DATA_LOAD_PATH + '/devtest.npz') as data:
+    with np.load(DATA_LOAD_PATH + '\\devtest.npz') as data:
         # partition the desired amount from the test set.
         test_X = data['devtest_X']
         test_Y = data['devtest_Y']
